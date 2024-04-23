@@ -26,7 +26,8 @@ const startServer = async () => {
             id : ID!,
             title : String!,
             completed : Boolean!
-           
+            userId : ID!
+            user : User!
         }
 
         type Query{
@@ -37,6 +38,16 @@ const startServer = async () => {
         }
     `,
     resolvers: {
+
+      Todo :{
+        user : async (todo) => {
+          const { data } = await axios.get(
+            `https://jsonplaceholder.typicode.com/users/${todo.userId}`
+          );
+          return data;
+        }
+      },
+
       Query: {
         getTodos: async () => {
           const { data } = await axios.get(
@@ -76,7 +87,7 @@ const startServer = async () => {
   app.use("/graphql", expressMiddleware(server));
 
   app.listen(4000, () => {
-    console.log(`Server ready at http://localhost:4000${server.graphqlPath}`);
+    console.log(`Server ready at http://localhost:4000/graphql`);
   });
 };
 
